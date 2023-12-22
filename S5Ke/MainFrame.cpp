@@ -52,6 +52,7 @@ void MainFrame::HotKeyDetection() {
 					Iconize(false);
 				}
 				else {
+					if (spamText->GetValue().ToStdString().empty()) { wxLogStatus("Text to spam is empty!"); continue; }
 					started = true;
 					Iconize(true);
 					SpamText();
@@ -67,8 +68,16 @@ void MainFrame::HotKeyDetection() {
 void MainFrame::SpamText() {
 	const auto spamtext = [this]() {
 		while (started) {
-			i++;
-			wxLogStatus("%d", i);
+			std::string text = spamText->GetValue().ToStdString();
+			short reps = spamReps->GetValue();
+
+			if (reps == 0) { reps = 1, 000, 000; }
+			for (int rep = reps; rep > 0; rep--) {
+				for (int chars = 0; chars < text.length(); chars++) {
+					//send text[chars] as keystroke
+				}
+			}
+			started = false;
 		}
 	};
 	std::thread bck{ spamtext };
@@ -94,10 +103,15 @@ void MainFrame::SwitchEmpty(wxCommandEvent& evt) {
 }
 
 void MainFrame::StartSpam(wxCommandEvent& evt) {
-	started = true;
-	Iconize(true);
-	Sleep(3000);
-	SpamText();
+	if (spamText->GetValue().ToStdString().empty()) {
+		wxLogStatus("Text to spam is empty!");
+	}
+	else {
+		started = true;
+		Iconize(true);
+		Sleep(3000);
+		SpamText();
+	}
 }
 
 void MainFrame::StopSpam(wxCommandEvent& evt) {
