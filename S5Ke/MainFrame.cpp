@@ -4,22 +4,12 @@
 #include <windows.h>
 #include <thread>
 
-bool started{ false };
+bool started{ false }; int i{ 0 };
 
 MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title) {
 	CreateControls();
 	BindEventHandlers();
 	HotKeyDetection();
-
-	/*while (true) {
-		wxString text = spamText->GetValue();
-		wxInt16 times = spamReps->GetValue();
-		while (started && (GetKeyState(VK_F5) & 0x8000)) {
-			for (int i = times; i > 0; i--) {
-				wxLogStatus(text);
-			}
-		}
-	}*/
 }
 
 void MainFrame::CreateControls() { //400,240
@@ -57,14 +47,31 @@ void MainFrame::HotKeyDetection() {
 	const auto hkdetect = [this]() {
 		while (true) {
 			if (GetKeyState(VK_F5) & 0x8000) {
-				started = started ? false : true;
-				if (started) { wxLogStatus("started"); }
-				else { wxLogStatus("not started"); }
+				if (started) {
+					started = false;
+					Iconize(false);
+				}
+				else {
+					started = true;
+					Iconize(true);
+					SpamText();
+				}
 				Sleep(300);
 			}
 		}
 	};
 	std::thread bck{ hkdetect };
+	bck.detach();
+}
+
+void MainFrame::SpamText() {
+	const auto spamtext = [this]() {
+		while (started) {
+			i++;
+			wxLogStatus("%d", i);
+		}
+	};
+	std::thread bck{ spamtext };
 	bck.detach();
 }
 
@@ -88,10 +95,11 @@ void MainFrame::SwitchEmpty(wxCommandEvent& evt) {
 
 void MainFrame::StartSpam(wxCommandEvent& evt) {
 	started = true;
-	wxLogStatus("started");
+	Iconize(true);
+	Sleep(3000);
+	SpamText();
 }
 
 void MainFrame::StopSpam(wxCommandEvent& evt) {
 	started = false;
-	wxLogStatus("not started");
 }

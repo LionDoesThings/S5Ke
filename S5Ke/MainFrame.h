@@ -10,6 +10,7 @@ private:
 	void CreateControls();
 	void BindEventHandlers();
 	void HotKeyDetection();
+	void SpamText();
 
 	void SwitchSpam(wxCommandEvent& evt);
 	void SwitchClick(wxCommandEvent& evt);
