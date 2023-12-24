@@ -9,11 +9,14 @@ public:
 private:
 	void CreateControls();
 	void BindEventHandlers();
-	void HotKeyDetection();
-	void SpamText();
-
 	void SwitchSpam(wxCommandEvent& evt);
 	void SwitchClick(wxCommandEvent& evt);
+
+	void HotKeyDetection();
+
+	void SpamText();
+	void StartStopSpam(wxCommandEvent& evt);
+	
 
 	wxPanel* mainPanel;
 
@@ -30,7 +33,5 @@ private:
 	wxStaticText* spamDelayLabel;
 	wxSpinCtrl* spamDelay;
 	wxButton* spamStartStop;
-
-	void StartSpamStop(wxCommandEvent& evt);
 };
 

@@ -13,7 +13,7 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title) 
 	HotKeyDetection();
 }
 
-void MainFrame::CreateControls() { //400,240
+void MainFrame::CreateControls() { //UI
 	mainPanel = new wxPanel(this);
 
 	panelSpam = new wxPanel(mainPanel, wxID_ANY, wxPoint(30, 0), wxSize(370, 240));
@@ -32,12 +32,23 @@ void MainFrame::CreateControls() { //400,240
 	spamStartStop = new wxButton(panelSpam, wxID_ANY, "Start/Stop (F6)", wxPoint(85, 140), wxSize(100, 30));
 }
 
-void MainFrame::BindEventHandlers() {
+void MainFrame::BindEventHandlers() { //Button handler
 	sideButtonSpam->Bind(wxEVT_BUTTON, &MainFrame::SwitchSpam, this);
 	sideButtonClick->Bind(wxEVT_BUTTON, &MainFrame::SwitchClick, this);
 
-	spamStartStop->Bind(wxEVT_BUTTON, &MainFrame::StartSpamStop, this);
+	spamStartStop->Bind(wxEVT_BUTTON, &MainFrame::StartStopSpam, this);
 }
+
+void MainFrame::SwitchSpam(wxCommandEvent& evt) { //Switch to spam page
+	panelSpam->Show();
+	panelClick->Hide();
+}
+
+void MainFrame::SwitchClick(wxCommandEvent& evt) { //Switch to click page
+	panelSpam->Hide();
+	panelClick->Show();
+}
+
 
 void MainFrame::HotKeyDetection() {
 	const auto hkdetect = [this]() {
@@ -60,6 +71,7 @@ void MainFrame::HotKeyDetection() {
 	std::thread bck{ hkdetect };
 	bck.detach();
 }
+
 
 void MainFrame::SpamText() {
 	const auto spamtext = [this]() {
@@ -100,17 +112,7 @@ void MainFrame::SpamText() {
 	bck.detach();
 }
 
-void MainFrame::SwitchSpam(wxCommandEvent& evt) {
-	panelSpam->Show();
-	panelClick->Hide();
-}
-
-void MainFrame::SwitchClick(wxCommandEvent& evt) {
-	panelSpam->Hide();
-	panelClick->Show();
-}
-
-void MainFrame::StartSpamStop(wxCommandEvent& evt) {
+void MainFrame::StartStopSpam(wxCommandEvent& evt) {
 	if (spamText->GetValue().ToStdString().empty()) {
 		wxMessageBox(wxT("Text to spam is empty!"), wxT("S5Ke"));
 		return;
