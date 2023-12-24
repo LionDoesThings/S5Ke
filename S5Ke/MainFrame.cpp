@@ -1,6 +1,7 @@
 #include "MainFrame.h"
 #include <wx/wx.h>
 #include <wx/spinctrl.h>
+#include <wx/msgdlg.h>
 #include <windows.h>
 #include <thread>
 
@@ -29,8 +30,6 @@ void MainFrame::CreateControls() { //400,240
 	spamDelayLabel = new wxStaticText(panelSpam, wxID_ANY, "Delay (ms)", wxPoint(160, 80), wxSize(100, 30));
 	spamDelay = new wxSpinCtrl(panelSpam, wxID_ANY, "", wxPoint(162, 100), wxSize(100, 30), wxALIGN_LEFT, 0, 1000000, 70);
 	spamStartStop = new wxButton(panelSpam, wxID_ANY, "Start/Stop (F6)", wxPoint(85, 140), wxSize(100, 30));
-
-	CreateStatusBar();
 }
 
 void MainFrame::BindEventHandlers() {
@@ -49,7 +48,7 @@ void MainFrame::HotKeyDetection() {
 					Iconize(false);
 				}
 				else {
-					if (spamText->GetValue().ToStdString().empty()) { wxLogStatus("Text to spam is empty!"); continue; }
+					if (spamText->GetValue().ToStdString().empty()) { wxMessageBox(wxT("Text to spam is empty!"), wxT("S5Ke")); continue; }
 					started = true;
 					Iconize(true);
 					SpamText();
@@ -113,7 +112,7 @@ void MainFrame::SwitchClick(wxCommandEvent& evt) {
 
 void MainFrame::StartSpamStop(wxCommandEvent& evt) {
 	if (spamText->GetValue().ToStdString().empty()) {
-		wxLogStatus("Text to spam is empty!");
+		wxMessageBox(wxT("Text to spam is empty!"), wxT("S5Ke"));
 		return;
 	}
 
