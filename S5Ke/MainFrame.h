@@ -14,26 +14,23 @@ private:
 
 	void SwitchSpam(wxCommandEvent& evt);
 	void SwitchClick(wxCommandEvent& evt);
-	void SwitchEmpty(wxCommandEvent& evt);
 
 	wxPanel* mainPanel;
 
 	wxPanel* panelSpam;
 	wxPanel* panelClick;
-	wxPanel* panelEmpty;
 	wxButton* sideButtonSpam;
 	wxButton* sideButtonClick;
-	wxButton* sideButtonEmpty;
 
 
 	wxStaticText* spamTextLabel;
 	wxTextCtrl* spamText;
 	wxStaticText* spamRepsLabel;
 	wxSpinCtrl* spamReps;
-	wxButton* spamStart;
-	wxButton* spamStop;
+	wxStaticText* spamDelayLabel;
+	wxSpinCtrl* spamDelay;
+	wxButton* spamStartStop;
 
-	void StartSpam(wxCommandEvent& evt);
-	void StopSpam(wxCommandEvent& evt);
+	void StartSpamStop(wxCommandEvent& evt);
 };
 
