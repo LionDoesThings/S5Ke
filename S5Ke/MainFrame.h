@@ -1,5 +1,6 @@
 #pragma once
 #include <wx/wx.h>
+#include <wx/spinctrl.h>
 
 class MainFrame : public wxFrame
 {
@@ -13,10 +14,14 @@ private:
 
 	void HotKeyDetection();
 	void HotKeyPromptRestart();
+	void LoadHotKey();
+	void ChangeNewHotkey(wxCommandEvent& evt);
 
 	void SpamText();
 	void Click();
 	void StartStop(wxCommandEvent& evt);
+
+	void OnWindowClosed(wxCloseEvent& evt);
 	
 
 	wxPanel* mainPanel;
@@ -34,13 +39,15 @@ private:
 	wxStaticText* spamDelayLabel;
 	wxSpinCtrl* spamDelay;
 	wxButton* spamStartStop;
+	wxButton* spamHK;
 
 
 	wxRadioBox* clickTypeSelection;
 	wxStaticText* clickRepsLabel;
 	wxSpinCtrl* clickReps;
-	wxStaticText* clickIntervalLabel;
-	wxSpinCtrl* clickInterval;
+	wxStaticText* clickDelayLabel;
+	wxSpinCtrl* clickDelay;
 	wxButton* clickStartStop;
+	wxButton* clickHK;
 };
 
