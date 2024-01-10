@@ -1,6 +1,6 @@
 //TO-DO LIST:
-//1. CLICKER SET POSITION
-//2. SENDINPUT() DIRECTLY TO ANOTHER APPLICATION
+//1. SENDINPUT() DIRECTLY TO ANOTHER APPLICATION
+//2. 
 //3. 
 //4. 
 //5. MORE FUNCTIONS?
@@ -25,12 +25,15 @@ int spamRepsINI{ 1 };
 int spamDelayINI{ 70 };
 int clickTypeINI{ 0 };
 int clickRepsINI{ 0 };
-int clickDelayINI{ 10 };
+int clickDelayINI{ 50 };
 int hotkeyextendINI{ 0 };
 int hotkeyINI{ 117 }; //117 is F6
 
+int curx{NULL};
+int cury{NULL};
+
 int VKCodesExtended[] = { VK_LWIN , VK_RWIN , VK_LSHIFT , VK_RSHIFT , VK_LCONTROL , VK_RCONTROL , VK_LMENU , VK_RMENU };
-int VKCodes[] = { VK_BACK, VK_TAB , VK_CLEAR, VK_RETURN , VK_PAUSE , VK_CAPITAL , VK_ESCAPE , VK_SPACE , VK_PRIOR , VK_NEXT , VK_END , VK_HOME ,VK_LEFT , VK_UP , VK_RIGHT , VK_DOWN ,
+int VKCodes[] = { VK_BACK, VK_TAB , VK_CLEAR , VK_PAUSE , VK_CAPITAL , VK_ESCAPE , VK_SPACE , VK_PRIOR , VK_NEXT , VK_END , VK_HOME ,VK_LEFT , VK_UP , VK_RIGHT , VK_DOWN ,
 	VK_SELECT , VK_PRINT  , VK_EXECUTE , VK_SNAPSHOT , VK_INSERT , VK_DELETE , VK_HELP , 0x30 , 0x31 , 0x32 , 0x33 , 0x34 , 0x35 , 0x36 , 0x37 , 0x38 , 0x39 , 0x41 , 0x42 , 0x43 ,
 	0x44 , 0x45 , 0x46 , 0x47 , 0x48 , 0x49 , 0x4A , 0x4B , 0x4C , 0x4D , 0x4E , 0x4F , 0x50 , 0x51 , 0x52 , 0x53 , 0x54 , 0x55 , 0x56 , 0x57 , 0x58 , 0x59 , 0x5A , VK_APPS ,
 	VK_NUMPAD0 , VK_NUMPAD1 , VK_NUMPAD2 , VK_NUMPAD3 , VK_NUMPAD4 , VK_NUMPAD5 , VK_NUMPAD6 , VK_NUMPAD7 , VK_NUMPAD8 , VK_NUMPAD9 , VK_MULTIPLY , VK_ADD , VK_SEPARATOR ,
@@ -80,7 +83,8 @@ void MainFrame::CreateControls() { //UI
 	clickDelayLabel = new wxStaticText(panelClick, wxID_ANY, "Delay (ms)", wxPoint(160, 80), wxSize(100, 30));
 	clickDelay = new wxSpinCtrl(panelClick, wxID_ANY, "", wxPoint(162, 100), wxSize(100, 30), wxALIGN_LEFT, 0, 3600, clickDelayINI);
 	clickStartStop = new wxButton(panelClick, wxID_ANY, "Start/Stop", wxPoint(85, 140), wxSize(100, 30));
-	clickHK = new wxButton(panelClick, wxID_ANY, "HK", wxPoint(340, 210), wxSize(30, 30));
+	clickHK = new wxButton(panelClick, wxID_ANY, "HK", wxPoint(250, 150), wxSize(30, 30));
+	clickSetPos = new wxButton(panelClick, wxID_ANY, "Pos", wxPoint(0, 150), wxSize(30, 30));
 }
 
 void MainFrame::BindEventHandlers() { //Button handler
@@ -92,6 +96,8 @@ void MainFrame::BindEventHandlers() { //Button handler
 
 	spamHK->Bind(wxEVT_BUTTON, &MainFrame::ChangeNewHotkey, this);
 	clickHK->Bind(wxEVT_BUTTON, &MainFrame::ChangeNewHotkey, this);
+
+	clickSetPos->Bind(wxEVT_BUTTON, &MainFrame::SetMousePos, this);
 
 	this->Bind(wxEVT_CLOSE_WINDOW, &MainFrame::OnWindowClosed, this);
 }
@@ -121,13 +127,9 @@ void MainFrame::HotKeyDetection() {
 					if (!started) {
 						if (panel == 0) {
 							if (spamText->GetValue().ToStdString().empty()) { HotKeyPromptRestart(); break; }
-							started = true;
-							Iconize(true);
 							SpamText();
 						}
-						else {
-							started = true;
-							Iconize(false);
+						if (panel == 1) {
 							Click();
 						}
 					}
@@ -190,15 +192,17 @@ void MainFrame::LoadHotKey() {
 }
 
 void MainFrame::ChangeNewHotkey(wxCommandEvent& evt) {
+	wxMessageBox(wxT("Press down desired hotkey."), wxT("S5Ke"));
 	const auto changenewhk = [this]() {
 		while (true) {
 			for (int codeextend = (std::size(VKCodesExtended) - 1); codeextend > 0; codeextend--) {
 				while (GetKeyState(VKCodesExtended[codeextend]) & 0x8000) {
 					for (int code = (std::size(VKCodes) - 1); code > 0; code--) {
 						if (GetKeyState(VKCodes[code]) & 0x8000) {
+							Sleep(300);
 							hotkeyextendINI = VKCodesExtended[codeextend];
 							hotkeyINI = VKCodes[code];
-							wxMessageBox(wxT("Hotkey changed"), wxT("S5Ke"));
+							wxMessageBox(wxT("Hotkey changed."), wxT("S5Ke"));
 							break;
 						}
 					}
@@ -207,9 +211,10 @@ void MainFrame::ChangeNewHotkey(wxCommandEvent& evt) {
 
 			for (int code = (std::size(VKCodes) - 1); code > 0; code--) {
 				if (GetKeyState(VKCodes[code]) & 0x8000) {
+					Sleep(300);
 					hotkeyextendINI = 0;
 					hotkeyINI = VKCodes[code];
-					wxMessageBox(wxT("Hotkey changed"), wxT("S5Ke"));
+					wxMessageBox(wxT("Hotkey changed."), wxT("S5Ke"));
 					break;
 				}
 			}
@@ -219,8 +224,19 @@ void MainFrame::ChangeNewHotkey(wxCommandEvent& evt) {
 	chk.detach();
 }
 
+void MainFrame::SetMousePos(wxCommandEvent& evt) {
+	wxMessageBox(wxT("Position your cursor at desired spot. Press ENTER when ready."), wxT("S5Ke"));
+	POINT cursorpos;
+	GetCursorPos(&cursorpos);
+	curx = cursorpos.x;
+	cury = cursorpos.y;
+	wxMessageBox(wxT("Cursor position set."), wxT("S5Ke"));
+}
+
 
 void MainFrame::SpamText() {
+	started = true;
+	Iconize(true);
 	const auto spamtext = [this]() {
 		while (started) {
 			std::string text = spamText->GetValue().ToStdString();
@@ -259,9 +275,12 @@ void MainFrame::SpamText() {
 	};
 	std::thread st{ spamtext };
 	st.detach();
+	Sleep(300);
 }
 
 void MainFrame::Click() {
+	started = true;
+	Iconize(true);
 	const auto click = [this]() {
 		while (started) {
 			int type = clickTypeSelection->GetSelection(); //Return selection index
@@ -286,19 +305,14 @@ void MainFrame::Click() {
 				break;
 			}
 
-			POINT cursorpos;
-			GetCursorPos(&cursorpos);
-
 			INPUT ip;
 			ip.type = INPUT_MOUSE;
-			ip.mi.dx = cursorpos.x;
-			ip.mi.dy = cursorpos.y;
 			ip.mi.mouseData = 0;
 			ip.mi.time = 0;
 
 			if (reps == 0) {
-				while (started)
-				{
+				while (started) {
+					if (curx != NULL) { SetCursorPos(curx, cury); }
 					ip.mi.dwFlags = type_DOWN;
 					SendInput(1, &ip, sizeof(INPUT));
 
@@ -309,6 +323,7 @@ void MainFrame::Click() {
 				}
 			} else {
 				for (int rep = reps; rep > 0; rep--) {
+					if (curx != NULL) { SetCursorPos(curx, cury); }
 					ip.mi.dwFlags = type_DOWN;
 					SendInput(1, &ip, sizeof(INPUT));
 
@@ -326,6 +341,7 @@ void MainFrame::Click() {
 		};
 	std::thread cl{ click };
 	cl.detach();
+	Sleep(300);
 }
 
 void MainFrame::StartStop(wxCommandEvent& evt) {
@@ -335,13 +351,14 @@ void MainFrame::StartStop(wxCommandEvent& evt) {
 	}
 
 	if (!started) {
-		started = true;
-		Iconize(true);
-		if (!panel) {
+		if (panel == 0) {
+			wxMessageBox(wxT("Spamming will start 3 seconds after this is closed."), wxT("S5Ke"));
 			Sleep(3000);
 			SpamText();
 		}
-		else {
+		if (panel == 1) {
+			wxMessageBox(wxT("Clicking will start 3 seconds after this is closed."), wxT("S5Ke"));
+			Sleep(3000);
 			Click();
 		}
 	}

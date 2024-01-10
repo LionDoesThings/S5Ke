@@ -16,6 +16,7 @@ private:
 	void HotKeyPromptRestart();
 	void LoadHotKey();
 	void ChangeNewHotkey(wxCommandEvent& evt);
+	void SetMousePos(wxCommandEvent& evt);
 
 	void SpamText();
 	void Click();
@@ -49,5 +50,6 @@ private:
 	wxSpinCtrl* clickDelay;
 	wxButton* clickStartStop;
 	wxButton* clickHK;
+	wxButton* clickSetPos;
 };
 
